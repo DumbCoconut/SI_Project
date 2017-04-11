@@ -192,7 +192,17 @@ void Viewer::enableShaders() {
     glUniform1i(glGetUniformLocation(_shaderNormal->id(), "heightMap"), 0);
 
     // Enable noise shader
-    // TOD
+    // TODO
+    /*
+     * .vert
+     * layout (location = 0) in vec 3 pos;
+     * uniform sample 2d normedDepthMap;
+     * out vec4 normedDepth;
+     * vec3 p = pos;
+     * vec4 d = texture ( ... );
+     * p = p + d.w * ( ...)
+     * normedDepth = d
+     */
 }
 
 
