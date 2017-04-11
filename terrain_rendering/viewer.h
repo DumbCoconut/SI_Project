@@ -102,9 +102,6 @@ class Viewer : public QGLWidget {
   glm::vec3 _light; // light direction
   bool      _mode;  // camera motion or light motion
 
-  Shader *_shaderFirstPass; // shader used to draw geometry in the FBO
-  Shader *_shaderSecondPass; // shader used to compute lighting
-
   /* grid */
   Grid *_grid;
 
@@ -123,6 +120,11 @@ class Viewer : public QGLWidget {
   GLuint _fboRenderHF;
   // 5th pass: shadows
   GLuint _fboCreateShadowMap;
+
+  /* shaders */
+  std::vector<Shader *> _shaders;
+  Shader _shaderNormal;
+  Shader _shaderNoise;
 
   /* textures */
   GLuint _texHeightMap;

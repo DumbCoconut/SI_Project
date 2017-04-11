@@ -83,6 +83,26 @@ void Viewer::drawVAO() {
 
 }
 
+void Viewer::generateHeightField() {
+
+}
+
+void Viewer::generateNormalMapAssociatedToHeightFeild() {
+
+}
+
+void Viewer::renderHeightFeild() {
+
+}
+
+void Viewer::postProcess() {
+
+}
+
+void Viewer::shadows() {
+
+}
+
 void Viewer::deleteVAO() {
   glDeleteBuffers(2, _terrain);
   glDeleteBuffers(1, &_quad);
@@ -97,6 +117,7 @@ void Viewer::deleteVAO() {
 
 void Viewer::createFBO() {
     createTextures();
+
     glGenFramebuffers(1, &_fboGenerateHFAndNM);
     glGenFramebuffers(1, &_fboRenderHF);
     glGenFramebuffers(1, &_fboCreateShadowMap);
@@ -104,6 +125,7 @@ void Viewer::createFBO() {
 
 void Viewer::initFBO() {
     initTextures();
+
     /* One for the 1st and 2nd pass
      *      the heightmap and normalmap could be stored in color attachements 0 et 1 of the FBO
      *      texture sizes/viewport = resolution of the grid                                                   */
@@ -142,6 +164,7 @@ void Viewer::initFBO() {
 
 void Viewer::deleteFBO() {
     deleteTextures();
+
     glDeleteFramebuffers(1, &_fboGenerateHFAndNM);
     glDeleteFramebuffers(1, &_fboRenderHF);
     glDeleteFramebuffers(1, &_fboCreateShadowMap);
@@ -152,39 +175,29 @@ void Viewer::deleteFBO() {
 /*----------------------------------------------------------------------------------------------------------*/
 
 void Viewer::createShaders() {
-  /* normal */
-  _vertexFilenames.push_back("shaders/normal.vert");
-  _fragmentFilenames.push_back("shaders/normal.frag");
+    // load normal shader
+    _shaderNormal = new Shader();
+    _shaderNormal->load("shaders/normal.vert", "shaders/normal.frag");
 
-  /* noise */
-  _vertexFilenames.push_back("shaders/noise.vert");
-  _fragmentFilenames.push_back("shaders/noise.frag");
+    // load noise shader
+    _shaderNoise = new Shader();
+    _shaderNormal->load("shaders/noise.vert", "shaders/noise.frag");
 }
 
-void Viewer::enableShader(unsigned int shader) {
-  // current shader ID
-  GLuint id = _shaders[shader]->id();
+void Viewer::enableShaders() {
+    // Enable normal shader
+    glUseProgram(_shaderNormal->id());
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, _texHeightMap);
+    glUniform1i(glGetUniformLocation(_shaderNormal->id(), "heightMap"), 0);
 
-  // activate the current shader
-  glUseProgram(id);
-
-  // send the model-view matrix
-  glUniformMatrix4fv(glGetUniformLocation(id,"mdvMat"),1,GL_FALSE,&(_cam->mdvMatrix()[0][0]));
-
-  // send the projection matrix
-  glUniformMatrix4fv(glGetUniformLocation(id,"projMat"),1,GL_FALSE,&(_cam->projMatrix()[0][0]));
-
-  // send the normal matrix (top-left 3x3 transpose(inverse(MDV)))
-  glUniformMatrix3fv(glGetUniformLocation(id,"normalMat"),1,GL_FALSE,&(_cam->normalMatrix()[0][0]));
-
-  // send a light direction (defined in camera space)
-  // TODO (use the variable _light)
-  glUniform3f(glGetUniformLocation(id, "light"),_light.x, _light.y, _light.z);
+    // Enable noise shader
+    // TOD
 }
 
-void Viewer::disableShader() {
-  // desactivate all shaders
-  glUseProgram(0);
+
+void Viewer::disableShaders() {
+
 }
 
 /*----------------------------------------------------------------------------------------------------------*/
