@@ -1,6 +1,6 @@
 #version 330
 
-out vec4 outBuffer;
+out vec4 outbuffer;
 uniform sampler2D heightmap;
 
 in vec2 texcoord;
