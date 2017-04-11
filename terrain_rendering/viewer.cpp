@@ -40,36 +40,43 @@ Viewer::~Viewer() {
 }
 
 void Viewer::createVAO() {
-  // create some buffers inside the GPU memory
-  glGenVertexArrays(1,&_vao);
-  glGenBuffers(3,_buffers);
+  //the variable _grid should be an instance of Grid
+  //the .h file should contain the following VAO/buffer ids
+  //GLuint _vaoTerrain;
+  //GLuint _vaoQuad;
+  //GLuint _terrain[2];
+  //GLuint _quad;
 
-  // activate VAO
-  glBindVertexArray(_vao);
-  
-  // store mesh positions into buffer 0 inside the GPU memory
-  glBindBuffer(GL_ARRAY_BUFFER,_buffers[0]);
-  glBufferData(GL_ARRAY_BUFFER,_mesh->nb_vertices*3*sizeof(float),_mesh->vertices,GL_STATIC_DRAW);
+  const GLfloat quadData[] = {
+    -1.0f,-1.0f,0.0f, 1.0f,-1.0f,0.0f, -1.0f,1.0f,0.0f, -1.0f,1.0f,0.0f, 1.0f,-1.0f,0.0f, 1.0f,1.0f,0.0f };
+
+  glGenBuffers(2,_terrain);
+  glGenBuffers(1,&_quad);
+  glGenVertexArrays(1,&_vaoTerrain);
+  glGenVertexArrays(1,&_vaoQuad);
+
+  // create the VBO associated with the grid (the terrain)
+  glBindVertexArray(_vaoTerrain);
+  glBindBuffer(GL_ARRAY_BUFFER,_terrain[0]); // vertices
+  glBufferData(GL_ARRAY_BUFFER,_grid->nbVertices()*3*sizeof(float),_grid->vertices(),GL_STATIC_DRAW);
   glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,0,(void *)0);
   glEnableVertexAttribArray(0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,_terrain[1]); // indices
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER,_grid->nbFaces()*3*sizeof(int),_grid->faces(),GL_STATIC_DRAW);
 
-  // store mesh normals into buffer 1 inside the GPU memory
-  glBindBuffer(GL_ARRAY_BUFFER,_buffers[1]);
-  glBufferData(GL_ARRAY_BUFFER,_mesh->nb_vertices*3*sizeof(float),_mesh->normals,GL_STATIC_DRAW);
-  glVertexAttribPointer(1,3,GL_FLOAT,GL_TRUE,0,(void *)0);
-  glEnableVertexAttribArray(1);
-
-  // store mesh indices into buffer 2 inside the GPU memory
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,_buffers[2]);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER,_mesh->nb_faces*3*sizeof(unsigned int),_mesh->faces,GL_STATIC_DRAW);
-
-  glBindVertexArray(0);
+  // create the VBO associated with the screen quad
+  glBindVertexArray(_vaoQuad);
+  glBindBuffer(GL_ARRAY_BUFFER,_quad); // vertices
+  glBufferData(GL_ARRAY_BUFFER, sizeof(quadData),quadData,GL_STATIC_DRAW);
+  glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,0,(void *)0);
+  glEnableVertexAttribArray(0);
 }
 
 void Viewer::deleteVAO() {
-  // delete your VAO here (function called in destructor)
-  glDeleteBuffers(3,_buffers);
-  glDeleteVertexArrays(1,&_vao);
+  glDeleteBuffers(2,_terrain);
+  glDeleteBuffers(1,&_quad);
+  glDeleteVertexArrays(1,&_vaoTerrain);
+  glDeleteVertexArrays(1,&_vaoQuad);
 }
 
 void Viewer::drawVAO() {
@@ -258,4 +265,3 @@ void Viewer::initializeGL() {
   // starts the timer 
   _timer->start();
 }
-

@@ -1,21 +1,18 @@
+#include "shader.h"
+
 #include <stdio.h>
-#include <string>
 #include <vector>
 #include <iostream>
 #include <fstream>
 #include <algorithm>
-using namespace std;
-
 #include <stdlib.h>
 #include <string.h>
 
-#include <GL/glew.h>
-
-#include "shader.h"
+using namespace std;
 
 Shader::Shader() :
   _programId(0) {
-  
+
 }
 
 Shader::~Shader() {
@@ -25,8 +22,8 @@ Shader::~Shader() {
 }
 
 void Shader::load(const char *vertex_file_path,
-		  const char *fragment_file_path) {
-  
+          const char *fragment_file_path) {
+
   // create and compile vertex shader object
   std::string vertexCode   = getCode(vertex_file_path);
   const char * vertexCodeC = vertexCode.c_str();
@@ -57,9 +54,9 @@ void Shader::load(const char *vertex_file_path,
 
 
 void Shader::reload(const char *vertex_file_path,
-		    const char *fragment_file_path) {
-  
-  // check if the program already contains a shader 
+            const char *fragment_file_path) {
+
+  // check if the program already contains a shader
   if(glIsProgram(_programId)) {
     // delete it...
     glDeleteProgram(_programId);
@@ -80,7 +77,7 @@ void Shader::checkCompilation(GLuint shaderId) {
 
   glGetShaderiv(shaderId,GL_COMPILE_STATUS,&result);
   glGetShaderiv(shaderId,GL_INFO_LOG_LENGTH,&infoLogLength);
-  
+
   if(infoLogLength>0) {
     std::vector<char> message(infoLogLength+1);
     glGetShaderInfoLog(shaderId,infoLogLength,NULL,&message[0]);
@@ -90,13 +87,13 @@ void Shader::checkCompilation(GLuint shaderId) {
 
 void Shader::checkLinks(GLuint programId) {
   // check if links were successfull (and display errors)
-  // call it after linking the program  
+  // call it after linking the program
   GLint result = GL_FALSE;
   int infoLogLength;
 
   glGetProgramiv(programId,GL_LINK_STATUS,&result);
   glGetProgramiv(programId,GL_INFO_LOG_LENGTH,&infoLogLength);
-  
+
   if(infoLogLength>0) {
     std::vector<char> message(infoLogLength+1);
     glGetProgramInfoLog(programId,infoLogLength,NULL,&message[0]);
@@ -118,6 +115,6 @@ std::string Shader::getCode(const char *file_path) {
   while(getline(shaderStream,line))
     shaderCode += "\n" + line;
   shaderStream.close();
-  
+
   return shaderCode;
 }
