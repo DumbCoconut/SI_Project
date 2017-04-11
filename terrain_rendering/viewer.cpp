@@ -207,7 +207,8 @@ void Viewer::enableShaders() {
 
 
 void Viewer::disableShaders() {
-
+    delete _shaderNormal;
+    delete _shaderNoise;
 }
 
 /*----------------------------------------------------------------------------------------------------------*/
