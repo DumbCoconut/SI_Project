@@ -9,6 +9,8 @@ class Mesh {
   unsigned int *get_face(unsigned int i);
   float        *get_vertex(unsigned int i);
   float        *get_normal(unsigned int i);
+  float        *get_tangent(unsigned int i);
+  float        *get_coord(unsigned int i);
   float        *get_color(unsigned int i);
 
   // length 
@@ -18,7 +20,9 @@ class Mesh {
   // data
   float        *vertices;
   float        *normals;
+  float        *tangents;
   float        *colors;
+  float        *coords;
   unsigned int *faces;
   
   // info
