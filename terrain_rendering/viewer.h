@@ -24,6 +24,8 @@
 #include "camera.h"
 #include "meshLoader.h"
 #include "shader.h"
+#include "resolution.h"
+#include "grid.h"
 
 class Viewer : public QGLWidget {
  public:
@@ -32,21 +34,64 @@ class Viewer : public QGLWidget {
   ~Viewer();
   
  protected :
+
+  /*----------------------------------------------------------------------------------------------------------*/
+  /*                                                GL MANAGING                                               */
+  /*----------------------------------------------------------------------------------------------------------*/
+
   virtual void paintGL();
   virtual void initializeGL();
   virtual void resizeGL(int width,int height);
+
+  /*----------------------------------------------------------------------------------------------------------*/
+  /*                                                CONTROLS                                                  */
+  /*----------------------------------------------------------------------------------------------------------*/
+
   virtual void keyPressEvent(QKeyEvent *ke);
   virtual void mousePressEvent(QMouseEvent *me);
   virtual void mouseMoveEvent(QMouseEvent *me);
 
  private:
-  void createVAO();
-  void deleteVAO();
-  void drawVAO();
 
-  void createShaders();
-  void enableShader(unsigned int shader=0);
-  void disableShader();
+  /*----------------------------------------------------------------------------------------------------------*/
+  /*                                                  VAOS                                                    */
+  /*----------------------------------------------------------------------------------------------------------*/
+
+  void createVAO();
+  void drawVAO();
+  void deleteVAO();
+
+  /*----------------------------------------------------------------------------------------------------------*/
+  /*                                                DRAWING                                                   */
+  /*----------------------------------------------------------------------------------------------------------*/
+
+  void drawObject(const glm::vec3 &pos,const glm::vec3 &col);
+  void drawQuad();
+
+  /*----------------------------------------------------------------------------------------------------------*/
+  /*                                                SHADERS                                                   */
+  /*----------------------------------------------------------------------------------------------------------*/
+
+
+  /*----------------------------------------------------------------------------------------------------------*/
+  /*                                                  FBOS                                                    */
+  /*----------------------------------------------------------------------------------------------------------*/
+
+  void createFBO();
+  void deleteFBO();
+  void initFBO();
+
+  /*----------------------------------------------------------------------------------------------------------*/
+  /*                                                TEXTURES                                                  */
+  /*----------------------------------------------------------------------------------------------------------*/
+
+  void createTextures();
+  void initTextures();
+  void deleteTextures();
+
+  /*----------------------------------------------------------------------------------------------------------*/
+  /*                                                ATTRIBUTES                                                */
+  /*----------------------------------------------------------------------------------------------------------*/
 
   QTimer        *_timer;    // timer that controls the animation
   unsigned int   _currentshader; // current shader index
@@ -57,12 +102,39 @@ class Viewer : public QGLWidget {
   glm::vec3 _light; // light direction
   bool      _mode;  // camera motion or light motion
 
-  std::vector<std::string> _vertexFilenames;   // all vertex filenames
-  std::vector<std::string> _fragmentFilenames; // all fragment filenames
-  std::vector<Shader *>    _shaders;           // all the shaders 
+  Shader *_shaderFirstPass; // shader used to draw geometry in the FBO
+  Shader *_shaderSecondPass; // shader used to compute lighting
 
-  GLuint _vao;
-  GLuint _buffers[3];
+  /* grid */
+  Grid *_grid;
+
+  /* vaos */
+  //the .h file should contain the following VAO/buffer ids
+  GLuint _vaoTerrain;
+  GLuint _vaoQuad;
+  GLuint _terrain[2];
+  GLuint _quad;
+
+  /* fbos */
+  // 1st pass: generate a heightfield (the terrain) using a procedural perlin noise.
+  // 2nd pass: generate the normal map associated with the heightfield
+  GLuint _fboGenerateHFAndNM;
+  // 3rd pass: render the heightfield
+  GLuint _fboRenderHF;
+  // 5th pass: shadows
+  GLuint _fboCreateShadowMap;
+
+  /* textures */
+  GLuint _texHeightMap;
+  GLuint _texNormalMap;
+  GLuint _texRendered;
+  GLuint _texDepth;
+
+  /* texture resolutions */
+  Resolution _resTexHeightMap;
+  Resolution _resTexNormalMap;
+  Resolution _resTexRendered;
+  Resolution _resTexDepth;
 };
 
 #endif // VIEWER_H
