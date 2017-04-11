@@ -1,1 +1,3 @@
 *.o
+terrain_rendering/Makefile
+terrain_rendering/terrain_rendering
