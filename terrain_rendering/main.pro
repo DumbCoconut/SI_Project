@@ -8,8 +8,10 @@ TARGET      = terrain_rendering
 LIBS        += -lGLEW -lGL -lGLU -lm
 INCLUDEPATH += $${GLM_PATH}
 
-SOURCES = shader.cpp meshLoader.cpp trackball.cpp camera.cpp main.cpp viewer.cpp grid.cpp
-HEADERS = shader.h meshLoader.h trackball.h camera.h viewer.h grid.h 
+SOURCES = shader.cpp meshLoader.cpp trackball.cpp camera.cpp main.cpp viewer.cpp grid.cpp \
+    resolution.cpp
+HEADERS = shader.h meshLoader.h trackball.h camera.h viewer.h grid.h \ 
+    resolution.h
 
 CONFIG  += qt opengl warn_on thread uic4 release
 QT      *= xml opengl core
